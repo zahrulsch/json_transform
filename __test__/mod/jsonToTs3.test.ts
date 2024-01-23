@@ -3,20 +3,22 @@ import { jsonToTs } from "../../src"
 
 test('Test deserialize -> complex JSON with inline is "false"', async function () {
     const tCase = `{
-    "name": "John Doe",
-    "age": 30,
-    "city": "New York",
-    "isStudent": false,
-    "grades": [90, 85, 92],
-    "address": {
-        "street": "123 Main St",
-        "zipCode": "10001",
-        "local": {
-            "pas": true,
-            "journals": [1234, 456, null],
+        /* person name */
+        "name": "John Doe",
+        // person age
+        "age": 30,
+        "city": "New York", // city
+        "isStudent": false,
+        "grades": [90, 85, 92],
+        "address": {
+            "street": "123 Main St",
+            "zipCode": "10001",
+            "local": {
+                "pas": true,
+                "journals": [1234, 456],
+            }
         }
-    }
-}`
+    }`
     const eXpect = `export type IRoot = {
     name: string
     age: number
@@ -28,7 +30,7 @@ test('Test deserialize -> complex JSON with inline is "false"', async function (
 
 export interface Local {
     pas: boolean
-    journals: (number | null)[]
+    journals: number[]
 }
 
 export interface Address {
