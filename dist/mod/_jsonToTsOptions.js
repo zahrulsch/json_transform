@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.defaultOptions=void 0,exports.defaultOptions={inlineType:!0,tabWidth:4,withPrettier:!0,semicolon:!1,printWidth:80,rootTypeName:"IRoot"};

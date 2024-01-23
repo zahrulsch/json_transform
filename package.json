@@ -1,0 +1,27 @@
+{
+    "name": "json_transform",
+    "version": "1.0.0",
+    "description": "json transform for convert json string to another types",
+    "main": "dist/index.js",
+    "types": "dist/types/index.d.ts",
+    "scripts": {
+        "test": "vitest",
+        "bench": "vitest bench",
+        "build": "sh ./build.sh"
+    },
+    "keywords": [
+        "json",
+        "transform",
+        "typescript"
+    ],
+    "author": "Mantracode <mantracode@yahoo.com>",
+    "license": "ISC",
+    "devDependencies": {
+        "prettier": "^3.2.4",
+        "terser": "^5.27.0",
+        "vitest": "^1.2.1"
+    },
+    "peerDependencies": {
+        "prettier": "^3.2.4"
+    }
+}
