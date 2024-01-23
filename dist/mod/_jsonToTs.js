@@ -1,1 +1,64 @@
-import{titleCase as e}from"../utils/textify";function r(t,n=!0,o=[],i){if(null===t)return"null";if("string"==typeof t)return"string";if("boolean"==typeof t)return"boolean";if("number"==typeof t||"bigint"==typeof t)return"number";if(Array.isArray(t)){const p=t.map((t=>{const p=r(t,n,o);if(!n&&!Array.isArray(t)&&"object"==typeof t&&null!==t&&i){let r=e(i,"array");const t=new RegExp(`(?:interface|type)\\s(${r})\\s?=?\\s?{`,"g"),n=o.map((e=>t.exec(e))).filter(Boolean).sort().pop();n&&(r=e(i)+r);const f=`export interface ${r} ${p}`;return o.push(f),r}return p})).filter(((e,r,t)=>t.indexOf(e)>=r));return p.length<2?p.join()+"[]":`(${p.join(" | ")})[]`}if("object"==typeof t&&null!==t){return`{ ${Object.keys(t).map((p=>{const f=t[p],s=r(t[p],n,o,p);if(!n&&!Array.isArray(f)&&"object"==typeof f&&null!==f){let r=e(p);const t=new RegExp(`(?:interface|type)\\s(${r})\\s?=?\\s?{`,"g");o.map((e=>t.exec(e))).filter(Boolean).sort().pop()&&(r=(i=i?e(i):"Broken")+r);const n=`export interface ${r} ${s}`;return o.push(n),`${p}: ${r}`}return`${p}: ${s}`})).join("; ")} }`}throw new Error("Unimplemented deserialize data type "+typeof t)}export{r as _jsonToTs};
+import { titleCase } from "../utils/textify";
+function _jsonToTs(json, inline = true, additionalTypes = [], prevKey) {
+    if (json === null)
+        return "null";
+    if (typeof json === "string")
+        return "string";
+    if (typeof json === "boolean")
+        return "boolean";
+    if (typeof json === "number" || typeof json === "bigint")
+        return "number";
+    if (Array.isArray(json)) {
+        const arrayTypes = json
+            .map((it) => {
+            const type = _jsonToTs(it, inline, additionalTypes);
+            if (!inline &&
+                !Array.isArray(it) &&
+                typeof it === "object" &&
+                it !== null &&
+                prevKey) {
+                const typeName = titleCase(prevKey, "array");
+                const additionalType = `export interface ${typeName} ${type}`;
+                additionalTypes.push(additionalType);
+                return typeName;
+            }
+            return type;
+        })
+            .filter((value, index, arrs) => arrs.indexOf(value) >= index);
+        if (arrayTypes.length < 2) {
+            return arrayTypes.join() + "[]";
+        }
+        return `(${arrayTypes.join(" | ")})` + "[]";
+    }
+    if (typeof json === "object" && json !== null) {
+        const keypairs = Object.keys(json).map((key) => {
+            const value = json[key];
+            const type = _jsonToTs(json[key], inline, additionalTypes, key);
+            if (!inline &&
+                !Array.isArray(value) &&
+                typeof value === "object" &&
+                value !== null) {
+                let typeName = titleCase(key);
+                // prevent duplicate type
+                const pattern = `(?:interface|type)\\s(${typeName})\\s?=?\\s?{`;
+                const re = new RegExp(pattern, "g");
+                const match = additionalTypes
+                    .map((it) => re.exec(it))
+                    .filter(Boolean)
+                    .sort()
+                    .pop();
+                if (match) {
+                    prevKey = prevKey ? titleCase(prevKey) : "Broken";
+                    typeName = prevKey + typeName;
+                }
+                const additionalType = `export interface ${typeName} ${type}`;
+                additionalTypes.push(additionalType);
+                return `${key}: ${typeName}`;
+            }
+            return `${key}: ${type}`;
+        });
+        return `{ ${keypairs.join("; ")} }`;
+    }
+    throw new Error(`Unimplemented deserialize data type ${typeof json}`);
+}
+export { _jsonToTs };

@@ -23,21 +23,7 @@ function _jsonToTs(
                     it !== null &&
                     prevKey
                 ) {
-                    let typeName = titleCase(prevKey, "array")
-
-                    // prevent duplicate type
-                    const pattern = `(?:interface|type)\\s(${typeName})\\s?=?\\s?{`
-                    const re = new RegExp(pattern, "g")
-                    const match = additionalTypes
-                        .map((it) => re.exec(it))
-                        .filter(Boolean)
-                        .sort()
-                        .pop()
-
-                    if (match) {
-                        typeName = titleCase(prevKey) + typeName
-                    }
-
+                    const typeName = titleCase(prevKey, "array")
                     const additionalType = `export interface ${typeName} ${type}`
                     additionalTypes.push(additionalType)
 

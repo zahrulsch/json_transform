@@ -1,1 +1,58 @@
-import{jsonCleaner as t}from"./jsonCleaner";import{_jsonToTs as e}from"./_jsonToTs";import{defaultOptions as r}from"./_jsonToTsOptions";async function o(o,i={}){if(i={...r,...i},!(o=t("string"==typeof o?o.trim():String(o).trim())))throw new Error("Target is empty");const n=JSON.parse(o);if("string"==typeof n||"number"==typeof n||"boolean"==typeof n||"symbol"==typeof n||"bigint"==typeof n||void 0===n)throw new Error("Invalid input data type");i.rootTypeName||(i.rootTypeName="IRoot");let p=[],a="export type "+i.rootTypeName+" = "+e(n,i.inlineType,p);if(p.length){p=p.filter(((t,e,r)=>r.indexOf(t)>=e));for(const t of p)a=a+"\n\n"+t+"\n"}if(!i.withPrettier)return a;const{format:s}=await import("prettier/standalone"),{default:f}=await import("prettier/plugins/estree"),{default:m}=await import("prettier/plugins/babel");return a=await s(a,{plugins:[f,m],parser:"babel-ts",printWidth:i.printWidth,semi:i.semicolon,tabWidth:i.tabWidth}),a}export{o as jsonToTs,r as defaultOptions};
+import { jsonCleaner } from "./jsonCleaner";
+import { _jsonToTs } from "./_jsonToTs";
+import { defaultOptions } from "./_jsonToTsOptions";
+/**
+ * Parse `JSON` into `TypeScript` types - remove all comment, remove extra comma symbols in JSON
+ * you can parse JSON format like `tsconfig.json`
+ * @param target - Can be string or object or anything else.
+ * @param {JsonToTsOptions} [options={}]
+ * */
+async function jsonToTs(target, options = {}) {
+    options = { ...defaultOptions, ...options };
+    if (typeof target === "string") {
+        target = jsonCleaner(target.trim());
+    }
+    else {
+        target = jsonCleaner(String(target).trim());
+    }
+    if (!target)
+        throw new Error("Target is empty");
+    const json = JSON.parse(target);
+    if (typeof json === "string" ||
+        typeof json === "number" ||
+        typeof json === "boolean" ||
+        typeof json === "symbol" ||
+        typeof json === "bigint" ||
+        typeof json === "undefined") {
+        throw new Error("Invalid input data type");
+    }
+    if (!options.rootTypeName) {
+        options.rootTypeName = "IRoot";
+    }
+    let additionalTypes = [];
+    let out = "export type " +
+        options.rootTypeName +
+        " = " +
+        _jsonToTs(json, options.inlineType, additionalTypes);
+    if (additionalTypes.length) {
+        additionalTypes = additionalTypes.filter((it, idx, arr) => arr.indexOf(it) >= idx);
+        for (const additional of additionalTypes) {
+            out = out + "\n\n" + additional + "\n";
+        }
+    }
+    if (!options.withPrettier) {
+        return out;
+    }
+    const { format } = await import("prettier/standalone");
+    const { default: estree } = await import("prettier/plugins/estree");
+    const { default: babel } = await import("prettier/plugins/babel");
+    out = await format(out, {
+        plugins: [estree, babel],
+        parser: "babel-ts",
+        printWidth: options.printWidth,
+        semi: options.semicolon,
+        tabWidth: options.tabWidth,
+    });
+    return out;
+}
+export { jsonToTs, defaultOptions };

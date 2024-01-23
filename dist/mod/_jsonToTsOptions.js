@@ -1,1 +1,8 @@
-export const defaultOptions={inlineType:!0,tabWidth:4,withPrettier:!0,semicolon:!1,printWidth:80,rootTypeName:"IRoot"};
+export const defaultOptions = {
+    inlineType: true,
+    tabWidth: 4,
+    withPrettier: true,
+    semicolon: false,
+    printWidth: 80,
+    rootTypeName: "IRoot",
+};
