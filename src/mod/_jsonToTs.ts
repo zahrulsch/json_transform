@@ -46,7 +46,12 @@ function _jsonToTs(
             const value = json[key]
             const type = _jsonToTs(json[key], inline, additionalTypes, key)
 
-            if (!inline && !Array.isArray(value) && typeof value === "object") {
+            if (
+                !inline &&
+                !Array.isArray(value) &&
+                typeof value === "object" &&
+                value !== null
+            ) {
                 const typeName = titleCase(key)
                 const additionalType = `export interface ${typeName} ${type}`
 
