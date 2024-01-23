@@ -23,7 +23,21 @@ function _jsonToTs(
                     it !== null &&
                     prevKey
                 ) {
-                    const typeName = titleCase(prevKey, "array")
+                    let typeName = titleCase(prevKey, "array")
+
+                    // prevent duplicate type
+                    const pattern = `(?:interface|type)\\s(${typeName})\\s?=?\\s?{`
+                    const re = new RegExp(pattern, "g")
+                    const match = additionalTypes
+                        .map((it) => re.exec(it))
+                        .filter(Boolean)
+                        .sort()
+                        .pop()
+
+                    if (match) {
+                        typeName = titleCase(prevKey) + typeName
+                    }
+
                     const additionalType = `export interface ${typeName} ${type}`
                     additionalTypes.push(additionalType)
 
@@ -52,10 +66,25 @@ function _jsonToTs(
                 typeof value === "object" &&
                 value !== null
             ) {
-                const typeName = titleCase(key)
-                const additionalType = `export interface ${typeName} ${type}`
+                let typeName = titleCase(key)
 
+                // prevent duplicate type
+                const pattern = `(?:interface|type)\\s(${typeName})\\s?=?\\s?{`
+                const re = new RegExp(pattern, "g")
+                const match = additionalTypes
+                    .map((it) => re.exec(it))
+                    .filter(Boolean)
+                    .sort()
+                    .pop()
+
+                if (match) {
+                    prevKey = prevKey ? titleCase(prevKey) : "Broken"
+                    typeName = prevKey + typeName
+                }
+
+                const additionalType = `export interface ${typeName} ${type}`
                 additionalTypes.push(additionalType)
+
                 return `${key}: ${typeName}`
             }
 
