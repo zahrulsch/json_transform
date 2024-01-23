@@ -1,6 +1,6 @@
 ## JSON_TRANSFORM Library
 
-Library / module ini ditulis bertujuan untuk transformasi data JSON kedalam typing beberapa bahasa diantarnya:
+Library ini ditulis dengan tujuan untuk transformasi data JSON kedalam typing beberapa bahasa diantaranya:
 
 #### 1. TypeScript
 
